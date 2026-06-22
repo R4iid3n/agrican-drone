@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Quiet drop-in for `gz sim`: same arguments, but the server runs headless
+# (no 3D window, which costs ~3 CPU threads). Does not start SITL.
+#
+#   sim-quiet -v4 -r iris_runway.sdf    instead of: gz sim -v4 -r iris_runway.sdf
+#   sim-quiet view                      open the 3D view on the RTX 4060 (close it anytime)
+
+source /opt/ros/jazzy/setup.bash
+export GZ_VERSION=harmonic
+export GZ_SIM_SYSTEM_PLUGIN_PATH=$HOME/ardupilot_gazebo/build${GZ_SIM_SYSTEM_PLUGIN_PATH:+:$GZ_SIM_SYSTEM_PLUGIN_PATH}
+export GZ_SIM_RESOURCE_PATH=$HOME/ardupilot_gazebo/models:$HOME/ardupilot_gazebo/worlds${GZ_SIM_RESOURCE_PATH:+:$GZ_SIM_RESOURCE_PATH}
+
+if [ "${1:-}" = view ]; then
+  exec "$HOME/.local/bin/gz-gpu" sim -g
+fi
+
+exec gz sim -s "$@"
