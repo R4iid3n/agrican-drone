@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'drone_info = drone_monitor.drone_info:main',
+            'fly_to = drone_monitor.fly_to:main'
         ],
     },
 )
