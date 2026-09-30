@@ -28,6 +28,9 @@ without any physical hardware.
   - `field_survey` — flies a full field-coverage mission: a boustrophedon ("lawnmower")
     pattern over the crop rows, advancing waypoint by waypoint, then returns home (RTL)
     and lands.
+  - `crop_scan` — reads the drone's downward camera (bridged from Gazebo) and estimates
+    crop coverage per field row using an Excess-Green vegetation index — a simulated
+    crop-scan payload.
 
 ## Architecture
 
@@ -110,8 +113,9 @@ ros2 run drone_monitor fly_to
 - [x] Autonomous waypoint flight from a ROS 2 node (`fly_to`)
 - [x] Farm world with crop rows and obstacles (`farm_field.sdf`)
 - [x] Multi-waypoint field-coverage mission — boustrophedon / lawnmower pattern (`field_survey`)
-- [ ] Downward camera payload → crop imaging over ROS 2
+- [x] Downward camera payload → crop imaging over ROS 2 (`iris_with_camera` + `crop_scan`)
 - [ ] Spray / payload actuation model
+- [ ] Field boundary → auto-generated survey grid
 
 ## Context
 

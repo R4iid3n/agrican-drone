@@ -80,8 +80,8 @@
         <visual name="visual">
           <geometry><plane><normal>0 0 1</normal><size>200 200</size></plane></geometry>
           <material>
-            <ambient>0.25 0.45 0.15 1</ambient>
-            <diffuse>0.30 0.55 0.18 1</diffuse>
+            <ambient>0.40 0.30 0.20 1</ambient>
+            <diffuse>0.45 0.33 0.22 1</diffuse>
           </material>
         </visual>
       </link>
@@ -116,7 +116,7 @@
 
     <!-- The ArduPilot iris quadrotor (JSON FDM link to SITL) -->
     <include>
-      <uri>model://iris_with_ardupilot</uri>
+      <uri>model://iris_with_camera</uri>
       <pose degrees="true">0 0 0.195 0 0 90</pose>
     </include>
 

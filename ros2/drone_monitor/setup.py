@@ -26,7 +26,8 @@ setup(
         'console_scripts': [
             'drone_info = drone_monitor.drone_info:main',
             'fly_to = drone_monitor.fly_to:main',
-            'field_survey = drone_monitor.field_survey:main'
+            'field_survey = drone_monitor.field_survey:main',
+            'crop_scan = drone_monitor.crop_scan:main'
         ],
     },
 )

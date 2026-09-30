@@ -138,3 +138,25 @@ capability: autonomous field coverage.
 
 Next phase: add a downward camera payload and stream its imagery over ROS 2, turning
 the coverage pattern into an actual crop scan.
+
+### 2026-09-30 — Camera payload and crop scan
+
+Added the first sensing payload. Created an `iris_with_camera` model — the ArduPilot
+iris with a downward-facing camera rigidly fixed under the airframe (a fixed joint to
+`base_link`, pitched 90 deg to look straight down). Gazebo renders it and publishes on
+the gz topic `/camera`; `ros_gz_bridge` relays it to a ROS 2 `sensor_msgs/Image`.
+
+Wrote the `crop_scan` node: for each frame it computes an Excess-Green index
+(`2G - R - B`) and takes the fraction of plant-like pixels as a crop-coverage estimate,
+then buckets the readings by the drone's Y position to report coverage per field row —
+the kind of map a real crop-scanning drone produces.
+
+To make the measurement meaningful, changed the field ground from green to brown soil
+so the green crop rows stand out; coverage then reads high over a row and low over bare
+soil between rows. Verified the camera points down (a grounded frame reads brown,
+R>G>B) and that the bridge + decode pipeline delivers frames to the node.
+
+Running `crop_scan` alongside `field_survey` produces a live per-row vegetation
+readout as the drone flies the lawnmower pattern — coverage, sensing, and autonomy
+working together. Next: a spray/actuation payload, or generating the survey grid
+automatically from a field boundary polygon.
