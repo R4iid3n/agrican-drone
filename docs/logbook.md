@@ -105,6 +105,36 @@ sense.
 Consolidated the project into a presentable repository: specification, architecture,
 setup guide, and this logbook. Cleaned up the ROS 2 package and helper scripts.
 
-Next phase: turn the single waypoint into a field-coverage mission (lawnmower pattern
-over the crop rows), then add a downward camera payload and stream its imagery over
-ROS 2 — the first genuinely agricultural capability.
+### 2026-09-30 — Field-coverage mission
+
+Turned the single waypoint into a full coverage mission (`field_survey`). The node
+generates a boustrophedon ("lawnmower") waypoint list programmatically — one pass per
+crop row, alternating X direction so the drone snakes across the field — then flies it,
+advancing to the next waypoint when within a reach radius, and finally switches to RTL
+to return home and land.
+
+Bringing it up on the new `farm_field` world surfaced a chain of bugs, each of which
+blocked everything downstream until fixed:
+
+- **World missing sensor system plugins.** My hand-written `farm_field.sdf` omitted the
+  `Imu` and `NavSat` system plugins (and `spherical_coordinates`) that the stock world
+  has. Without them the iris IMU/GPS produced nothing, SITL stalled waiting for a valid
+  FDM, and no heartbeat ever came. Fix: mirror the proven world header.
+- **MAVROS launch script self-terminating.** `start_mavros.sh` began with
+  `pkill -f mavros` — which matched the script's *own* command line (`start_mavros.sh`
+  contains "mavros") and killed itself before launching. This had been silently
+  sabotaging the bridge step for a while. Fix: match `mavros_node` specifically.
+- **Empty launch argument.** A `gcs_url:=""` expanded to an empty value that
+  `ros2 launch` rejects. Fix: drop the optional argument.
+- **Pre-arm failures under a slow sim.** With the 3D GUI rendering in software (no GPU
+  driver), the simulation ran at ~2 Hz; the two simulated IMUs then diverged and the
+  autopilot refused to arm ("Accels inconsistent"), and GPS needed time to lock.
+  Running the Gazebo *server* headless (viewing through a separate client) keeps the
+  simulation fast enough to arm cleanly.
+
+With all four resolved, the drone arms, climbs to 12 m, flies the 16-waypoint survey
+covering all eight crop rows, and returns home to land. First genuinely agricultural
+capability: autonomous field coverage.
+
+Next phase: add a downward camera payload and stream its imagery over ROS 2, turning
+the coverage pattern into an actual crop scan.

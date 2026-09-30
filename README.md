@@ -25,6 +25,9 @@ without any physical hardware.
     flight mode, GPS, local position, battery).
   - `fly_to` — commands a full autonomous sortie: switch to GUIDED, arm, take off, and
     fly to a target waypoint, holding position on arrival.
+  - `field_survey` — flies a full field-coverage mission: a boustrophedon ("lawnmower")
+    pattern over the crop rows, advancing waypoint by waypoint, then returns home (RTL)
+    and lands.
 
 ## Architecture
 
@@ -105,8 +108,8 @@ ros2 run drone_monitor fly_to
 - [x] Manual control via a ground station (MAVProxy)
 - [x] ROS 2 telemetry node (`drone_info`)
 - [x] Autonomous waypoint flight from a ROS 2 node (`fly_to`)
-- [ ] Farm world with crop rows and obstacles
-- [ ] Multi-waypoint field-coverage mission (boustrophedon / lawnmower pattern)
+- [x] Farm world with crop rows and obstacles (`farm_field.sdf`)
+- [x] Multi-waypoint field-coverage mission — boustrophedon / lawnmower pattern (`field_survey`)
 - [ ] Downward camera payload → crop imaging over ROS 2
 - [ ] Spray / payload actuation model
 

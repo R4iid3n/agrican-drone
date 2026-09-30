@@ -13,10 +13,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='Islam Aboubakarov',
-    maintainer_email='islamaboubakarov@gmail.com',
-    description='ROS 2 nodes to monitor and autonomously control an ArduPilot drone via MAVROS.',
-    license='MIT',
+    maintainer='r4iid3n',
+    maintainer_email='r4iid3n@todo.todo',
+    description='TODO: Package description',
+    license='TODO: License declaration',
     extras_require={
         'test': [
             'pytest',
@@ -25,7 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'drone_info = drone_monitor.drone_info:main',
-            'fly_to = drone_monitor.fly_to:main'
+            'fly_to = drone_monitor.fly_to:main',
+            'field_survey = drone_monitor.field_survey:main'
         ],
     },
 )
