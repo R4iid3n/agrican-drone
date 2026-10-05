@@ -79,31 +79,40 @@ agrican-drone/
 │   ├── setup.md          # install + run guide
 │   └── logbook.md        # development logbook (carnet de bord)
 ├── ros2/
-│   └── drone_monitor/    # ROS 2 Python package (drone_info, fly_to)
+│   └── drone_monitor/    # ROS 2 package: drone_info, fly_to, field_survey, crop_scan
 ├── sim/
-│   ├── scripts/          # helper scripts (headless Gazebo, MAVROS launch)
-│   └── worlds/           # Gazebo SDF worlds (field, props)
+│   ├── scripts/          # helpers (headless Gazebo, MAVROS + camera bridge launch)
+│   ├── worlds/           # Gazebo SDF worlds (farm field, crop rows, barn)
+│   ├── models/           # iris_with_camera (drone + downward camera)
+│   └── params/           # SITL params for the camera sim
 ├── LICENSE
 └── README.md
 ```
 
 ## Quickstart
 
-Full instructions in [`docs/setup.md`](docs/setup.md). In short, four terminals:
+Full instructions in [`docs/setup.md`](docs/setup.md). The full crop-scan demo, one
+terminal each:
 
 ```bash
-# 1 — Gazebo (headless, physics running)
-sim-quiet -v4 -r iris_runway.sdf
+# 1 — Gazebo (headless server; view separately with `sim-quiet view`)
+sim-quiet -v4 -r farm_field_cam.sdf
 
-# 2 — ArduPilot SITL (JSON backend, feeds MAVROS on 14551)
-sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console --out=127.0.0.1:14551
+# 2 — ArduPilot SITL (JSON backend; param file keeps the camera sim arm-able)
+sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console \
+  --out=127.0.0.1:14551 --add-param-file=$HOME/agrican_sim.parm
 
-# 3 — MAVROS bridge
+# 3 — MAVROS bridge  +  4 — camera bridge (Gazebo image -> ROS 2)
 bash sim/scripts/start_mavros.sh
+bash sim/scripts/start_camera_bridge.sh
 
-# 4 — an autonomous flight from a ROS 2 node
-ros2 run drone_monitor fly_to
+# 5 — crop analysis  +  6 — autonomous field-coverage mission
+ros2 run drone_monitor crop_scan
+ros2 run drone_monitor field_survey
 ```
+
+For a plain flight without the camera, use `farm_field.sdf` and drop the param file;
+`ros2 run drone_monitor fly_to` sends the drone to a single waypoint.
 
 ## Roadmap
 
