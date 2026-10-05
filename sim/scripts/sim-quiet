@@ -14,4 +14,10 @@ if [ "${1:-}" = view ]; then
   exec "$HOME/.local/bin/gz-gpu" sim -g
 fi
 
+# Render the headless server's sensors (e.g. the drone camera) on the RTX 4060
+# via PRIME offload, instead of software (llvmpipe), which is far too slow.
+export __NV_PRIME_RENDER_OFFLOAD=1
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+export __EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/10_nvidia.json
+
 exec gz sim -s "$@"

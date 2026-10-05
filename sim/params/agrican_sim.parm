@@ -1,0 +1,8 @@
+# SITL params for the Agrican camera sim.
+# The downward camera's rendering perturbs the simulated IMUs so the two differ,
+# tripping ArduPilot's "Accels inconsistent" pre-arm check. Using a single IMU
+# (disable IMU2/IMU3) removes the comparison; ACCTHRESH 0 disables the check too.
+# Load at SITL start:  sim_vehicle.py ... --add-param-file=$HOME/agrican-drone/sim/params/agrican_sim.parm
+INS_USE2 0
+INS_USE3 0
+ARMING_ACCTHRESH 0

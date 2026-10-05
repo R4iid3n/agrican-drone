@@ -92,6 +92,32 @@ ros2 topic echo /mavros/local_position/pose --once
 # position x/y/z should approach the target (10, 5, 10)
 ```
 
+## 6. Crop-scan demo (with the camera)
+
+To fly over the field **and** run the camera analysis, use the camera world
+`farm_field_cam.sdf` and load the sim params that keep it arm-able:
+
+```bash
+# Gazebo (camera world)
+sim-quiet -v4 -r farm_field_cam.sdf
+# SITL — note the extra --add-param-file
+sim_vehicle.py -v ArduCopter -f gazebo-iris --model JSON --console \
+  --out=127.0.0.1:14551 --add-param-file=sim/params/agrican_sim.parm
+# MAVROS, camera bridge, analysis, mission
+bash sim/scripts/start_mavros.sh
+bash sim/scripts/start_camera_bridge.sh
+ros2 run drone_monitor crop_scan
+ros2 run drone_monitor field_survey
+```
+
+The downward camera's rendering perturbs the two simulated IMUs enough to trip
+ArduPilot's "Accels inconsistent" pre-arm check. `sim/params/agrican_sim.parm`
+disables the second/third IMU (`INS_USE2 0`, `INS_USE3 0`) so there is nothing to
+compare, and the vehicle arms normally. For a plain flight with no camera, use
+`farm_field.sdf` (no param file needed). Run the Gazebo **server headless** and view
+through a separate `sim-quiet view` client — the camera renders on the GPU, but a
+full GUI server competes with the flight loop.
+
 ## Troubleshooting
 
 | Symptom | Cause | Fix |
@@ -101,4 +127,6 @@ ros2 topic echo /mavros/local_position/pose --once
 | MAVROS stays `connected: false` | No MAVLink reaching it | Ensure SITL has `--out=127.0.0.1:14551`; check the `fcu_url` in `start_mavros.sh` |
 | ROS node gets no position data | Wrong QoS on a best-effort topic | Subscribe with `qos_profile_sensor_data` |
 | Drone arms then disarms in a loop, never climbs | Position setpoint streamed during takeoff, or altitude never read | Gate the setpoint stream on the airborne flag; use sensor QoS on `/mavros/local_position/pose` |
+| `PreArm: Accels inconsistent` (camera world) | Camera rendering jitters the simulated IMUs | Load `sim/params/agrican_sim.parm` (disables IMU2/3) |
+| `PreArm: Main loop slow (<400Hz)` | Physics step too coarse | Keep `max_step_size` at `0.001` (1000 Hz) in the world |
 | `Package 'drone_monitor' not found` | Workspace not sourced | `source ~/ros2_ws/install/setup.bash` |
